@@ -1,0 +1,7 @@
+# Ignore local data files
+accounts.txt
+transactions.txt
+
+# Python cache
+__pycache__/
+*.py[cod]
