@@ -5,3 +5,4 @@ transactions.txt
 # Python cache
 __pycache__/
 *.py[cod]
+.idea
