@@ -6,7 +6,7 @@ import hashlib
 
 from cryptography.hazmat.primitives.asymmetric import ec
 
-from minichain.account import Account
+from src.minichain.account import Account
 
 
 class Transaction:

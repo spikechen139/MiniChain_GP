@@ -7,8 +7,9 @@ import time
 from dataclasses import dataclass
 from typing import List, Optional
 
-from minichain.merkle_tree import MerkleTree
-from minichain.transaction import Transaction
+from src.minichain.merkle_tree import MerkleTree
+from src.minichain.transaction import Transaction
+from src.minichain.miner import DIFFICULTY, mine_block
 
 GENESIS_PREV_HASH: str = "0" * 64
 
@@ -65,6 +66,7 @@ class Block:
 def create_genesis_block(
     transactions: List[Transaction],
     timestamp: Optional[int] = None,
+    do_mine: bool = True,
 ) -> Block:
     tree = MerkleTree(transactions)
     ts = int(time.time()) if timestamp is None else timestamp
@@ -74,14 +76,17 @@ def create_genesis_block(
         nonce=0,
         merkle_root=tree.root,
     )
-    return Block(header, transactions)
-
+    block = Block(header, transactions)
+    if do_mine:
+        mine_block(block, DIFFICULTY)
+    return block
 
 def create_block(
     transactions: List[Transaction],
     previous_hash: str,
     nonce: int = 0,
     timestamp: Optional[int] = None,
+    do_mine: bool = True,
 ) -> Block:
     tree = MerkleTree(transactions)
     ts = int(time.time()) if timestamp is None else timestamp
@@ -91,4 +96,7 @@ def create_block(
         nonce=nonce,
         merkle_root=tree.root,
     )
-    return Block(header, transactions)
+    block = Block(header, transactions)
+    if do_mine:
+        mine_block(block, DIFFICULTY)
+    return block

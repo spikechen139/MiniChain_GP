@@ -6,8 +6,8 @@ import json
 import os
 from typing import List, Tuple
 
-from minichain.account import Account
-from minichain.transaction import Transaction
+from src.minichain.account import Account
+from src.minichain.transaction import Transaction
 
 _PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 ACCOUNTS_FILE = os.path.join(_PROJECT_ROOT, "accounts.txt")

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import List, Optional
 
-from minichain.block import GENESIS_PREV_HASH, Block
+from src.minichain.block import GENESIS_PREV_HASH, Block
 
 
 class Blockchain:
