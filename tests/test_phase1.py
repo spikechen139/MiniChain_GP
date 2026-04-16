@@ -1,8 +1,8 @@
 """Phase I: account, SISO transaction, Merkle tree."""
 
-from minichain.account import Account
-from minichain.merkle_tree import MerkleTree
-from minichain.transaction import Transaction
+from src.minichain.account import Account
+from src.minichain.merkle_tree import MerkleTree
+from src.minichain.transaction import Transaction
 
 
 def test_account_roundtrip():

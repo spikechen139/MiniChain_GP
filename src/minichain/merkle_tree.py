@@ -5,7 +5,7 @@ from __future__ import annotations
 import hashlib
 from typing import List
 
-from minichain.transaction import Transaction
+from src.minichain.transaction import Transaction
 
 
 class MerkleTree:

@@ -5,17 +5,18 @@ from __future__ import annotations
 import os
 from typing import Optional
 
-from minichain.account import Account
-from minichain.block import create_block, create_genesis_block
-from minichain.blockchain import Blockchain, chain_links_valid
-from minichain.merkle_tree import MerkleTree
-from minichain.persistence import (
+from src.minichain.account import Account
+from src.minichain.block import create_block, create_genesis_block
+from src.minichain.blockchain import Blockchain, chain_links_valid
+from src.minichain.merkle_tree import MerkleTree
+from src.minichain.persistence import (
     ACCOUNTS_FILE,
     TRANSACTIONS_FILE,
     load_data,
     save_data,
 )
-from minichain.transaction import Transaction
+from src.minichain.transaction import Transaction
+from src.minichain.verifier import is_chain_valid
 # ============================================================================
 # Interactive CLI -- Helper Functions
 # ============================================================================
@@ -404,22 +405,33 @@ def cmd_blockchain_demo() -> None:
     a1, a2 = Account(), Account()
     tx1 = Transaction(sender=a1, receiver=a2, amount=10.0)
     tx2 = Transaction(sender=a2, receiver=a1, amount=3.0)
-    genesis = create_genesis_block([tx1, tx2])
+
+    print("  Mining genesis block...")
+    genesis = create_genesis_block([tx1, tx2], do_mine=True)
     chain = Blockchain(genesis)
 
     tx3 = Transaction(sender=a1, receiver=a2, amount=1.0)
     tx4 = Transaction(sender=a2, receiver=a1, amount=0.5)
     tip_hash = genesis.compute_block_hash()
-    block2 = create_block([tx3, tx4], previous_hash=tip_hash)
+    print("  Mining block #2...")
+    block2 = create_block([tx3, tx4], previous_hash=tip_hash, do_mine=True)
     chain.append_block(block2)
 
+
+    print(f"  Chain valid (PoW + links): {is_chain_valid(chain)}")
     print(f"  Genesis previous_hash (constant): {genesis.header.previous_hash[:24]}...")
     print(f"  Genesis merkle_root:            {genesis.header.merkle_root[:32]}...")
+    print(f"  Genesis nonce: {genesis.header.nonce}  hash: {genesis.compute_block_hash()}")
     print(f"  Genesis block_hash:             {genesis.compute_block_hash()[:32]}...")
     print(f"  Block2 previous_hash:           {block2.header.previous_hash[:32]}...")
-    print(f"  Block2 nonce:                   {block2.header.nonce}")
+    print(f"  Block2  nonce: {block2.header.nonce}  hash: {block2.compute_block_hash()}")
     print(f"  Block2 block_hash:              {block2.compute_block_hash()[:32]}...")
     print(f"  chain_links_valid (5.3 only):   {chain_links_valid(chain)}")
+
+    print("\n  Simulating tamper: modify transaction amount in genesis block...")
+    genesis.transactions[0].amount = 999.0  # 直接修改数据
+    genesis.transactions[0].tx_id = genesis.transactions[0]._compute_tx_id()  # 更新tx_id（破坏签名）
+    print(f"  After tamper, chain valid: {is_chain_valid(chain)}")
 
     bad_block = create_block([tx3, tx4], previous_hash="f" * 64)
     try:
